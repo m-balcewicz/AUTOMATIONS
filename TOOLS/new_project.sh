@@ -106,13 +106,12 @@ create_directory() {
     fi
 }
 
-# Display the welcome message with simpler approach first
-echo -e "\033[32m----------------------------------"
-echo -e "Welcome to New Project Script."
-echo -e "Developed 06/2025 by Martin Balcewicz"
-echo -e "(mail: martin.balcewicz@rockphysics.org)."
-echo -e "----------------------------------\033[0m"
-echo ""  # Add a blank line after the message
+# Display the welcome message using mk_log instead of direct ANSI codes
+mk_log "
+Welcome to New Project Script.
+Developed 06/2025 by Martin Balcewicz
+(mail: martin.balcewicz@rockphysics.org).
+" "true" "green"
 
 # Get current date and time
 current_datetime=$(date '+%Y-%m-%d, %H:%M:%S')
@@ -141,12 +140,10 @@ for folder in "${folders[@]}"; do
     create_directory "$full_path/$folder"
 done
 
-# Show completion message using direct approach (like the welcome message)
-echo ""  # Add a blank line before the message
-echo -e "\033[32m----------------------------------"
-echo -e "Project setup complete!"
-echo -e "Project ID: $project_id"
-echo -e "Project Path: $project_path"
-echo -e "Full Path: $full_path"
-echo -e "----------------------------------\033[0m"
-echo ""  # Add a blank line after the message
+# Show completion message using mk_log instead of direct ANSI codes
+mk_log "
+Project setup complete!
+Project ID: $project_id
+Project Path: $project_path
+Full Path: $full_path
+" "true" "green"
