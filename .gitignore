@@ -1,2 +1,9 @@
 # Directories and files to ignore in the repository
 .vscode/
+
+# SSH Configuration - never commit sensitive connection information
+PERSONAL/.ssh/
+**/PERSONAL/.ssh/
+.ssh/
+**/.ssh/
+**/*ssh_config*
