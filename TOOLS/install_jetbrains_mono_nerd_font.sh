@@ -181,6 +181,44 @@ detect_terminal() {
     echo "unknown"
 }
 
+# Function to set Terminal.app font using AppleScript
+set_terminal_font() {
+    local font_name="$1"
+    local font_size="$2"
+    
+    # Create a temporary AppleScript file
+    local temp_script=$(mktemp)
+    
+    # Write the AppleScript to set the Terminal font
+    cat > "$temp_script" <<EOT
+tell application "Terminal"
+    set targetFont to "$font_name"
+    set targetSize to $font_size
+    
+    -- Get the default settings
+    set targetSettings to default settings
+    
+    -- Set the font
+    set font name of targetSettings to targetFont
+    set font size of targetSettings to targetSize
+    
+    -- Also update current window if Terminal is open
+    if (count of windows) > 0 then
+        set current settings of selected tab of front window to targetSettings
+    end if
+end tell
+EOT
+    
+    # Execute the AppleScript
+    osascript "$temp_script"
+    local result=$?
+    
+    # Remove the temporary file
+    rm "$temp_script"
+    
+    return $result
+}
+
 # Function to configure ZSH with the font
 configure_zsh_with_font() {
     mk_log "Configuring ZSH to work with JetBrains Mono Nerd Font..." "false" "green"
@@ -246,16 +284,31 @@ We recommend creating a new profile with these settings.
             
             read -p "Would you like to set JetBrains Mono Nerd Font as default for Terminal.app? (y/n): " set_term_font
             if [[ "$set_term_font" =~ ^[Yy]$ ]]; then
-                # Attempt to change Terminal.app font using defaults
-                defaults write com.apple.Terminal "Default Window Settings" -string "Basic"
-                defaults write com.apple.Terminal "Startup Window Settings" -string "Basic"
-                defaults write com.apple.Terminal "NSFont" -string "JetBrainsMono-Regular 12"
-                defaults write com.apple.Terminal "FontAntialias" -bool true
+                # Ask for font size
+                read -p "Enter preferred font size (default: 12): " font_size
+                font_size=${font_size:-12}
                 
-                mk_log "
-Font settings applied to Terminal.app. 
-You may need to restart Terminal for changes to take effect.
-" "false" "green"
+                # Set the font using our AppleScript function
+                if set_terminal_font "JetBrainsMono Nerd Font" "$font_size"; then
+                    mk_log "
+Font settings successfully applied to Terminal.app!
+Font: JetBrainsMono Nerd Font
+Size: ${font_size}pt
+
+Note: These settings are applied immediately to open windows.
+For best results, restart Terminal.app after installation.
+" "true" "green"
+                else
+                    mk_log "
+Failed to set Terminal.app font automatically.
+
+You can manually set the font:
+1. Open Terminal → Preferences → Profiles
+2. Select your profile → Text tab
+3. Click 'Change...' next to font
+4. Select 'JetBrainsMono Nerd Font' and size ${font_size}
+" "true" "red"
+                fi
             fi
             ;;
             
