@@ -95,14 +95,23 @@
   typeset -g POWERLEVEL9K_VIRTUALENV_{LEFT,RIGHT}_DELIMITER=
 
   # Blue current directory.
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
+  # typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
+  # Replace with yellow (33) to match your bash configuration
+  typeset -g POWERLEVEL9K_DIR_FOREGROUND=33
 
   # Context format when root: user@host. The first part white, the rest grey.
-  typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$white}%n%f%F{$grey}@%m%f"
+  # typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$white}%n%f%F{$grey}@%m%f"
+  # Modified to use cyan for username and green for hostname
+  typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{36}%n%f%F{32}@%m%f"
+
   # Context format when not root: user@host. The whole thing grey.
-  typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE="%F{$grey}%n@%m%f"
-  # Don't show context unless root or in SSH.
-  typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION=
+  # typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE="%F{$grey}%n@%m%f"
+  # Modified to use cyan for username and green for hostname
+  typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE="%F{36}%n%f%F{32}@%m%f"
+
+  # User color customization
+  typeset -g POWERLEVEL9K_USER_FOREGROUND=36  # Cyan username
+  typeset -g POWERLEVEL9K_HOST_FOREGROUND=32  # Green hostname
 
   # Show previous command duration only if it's >= 5s.
   typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=5
