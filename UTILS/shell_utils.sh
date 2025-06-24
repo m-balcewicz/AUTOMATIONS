@@ -7,6 +7,8 @@
 # Description: Common utility functions for shell scripts
 #              - print_style: Print formatted messages with borders
 #              - mk_log: Print colored messages with optional styling
+#              - detect_os: Detect the current operating system
+#              - get_linux_distro: Get Linux distribution information
 # ---------------------------------------
 
 # Function to print with style
@@ -86,8 +88,45 @@ mk_log() {
     fi
 }
 
+# Function to detect the current operating system
+detect_os() {
+    local os_name="unknown"
+    
+    if [[ "$(uname)" == "Darwin" ]]; then
+        os_name="macos"
+    elif [[ "$(uname)" == "Linux" ]]; then
+        os_name="linux"
+    fi
+    
+    echo "$os_name"
+}
+
+# Function to get Linux distribution information
+get_linux_distro() {
+    if [ -f /etc/os-release ]; then
+        source /etc/os-release
+        echo "$ID"
+    elif [ -f /etc/lsb-release ]; then
+        source /etc/lsb-release
+        echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]'
+    elif [ -f /etc/debian_version ]; then
+        echo "debian"
+    elif [ -f /etc/fedora-release ]; then
+        echo "fedora"
+    elif [ -f /etc/centos-release ]; then
+        echo "centos"
+    else
+        echo "unknown"
+    fi
+}
+
 # Example of how to use these functions:
 # source /path/to/shell_utils.sh
 # mk_log "This is a success message" "true" "green"
 # mk_log "This is an error message" "true" "red"
 # mk_log "This is a plain message" "true"
+# os=$(detect_os)
+# if [ "$os" == "linux" ]; then
+#   distro=$(get_linux_distro)
+#   echo "Running on Linux distribution: $distro"
+# fi

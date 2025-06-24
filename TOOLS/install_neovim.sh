@@ -5,7 +5,7 @@
 # Email: martin.balcewicz@rockphysics.org
 # Date: June 2025
 # Description: Installs or updates Neovim editor
-#              using Homebrew package manager
+#              on macOS and Linux systems
 # ---------------------------------------
 
 # Source the shell utilities
@@ -94,12 +94,45 @@ else
             echo -e "$colored_message"
         fi
     }
+
+    detect_os() {
+        local os_name="unknown"
+        
+        if [[ "$(uname)" == "Darwin" ]]; then
+            os_name="macos"
+        elif [[ "$(uname)" == "Linux" ]]; then
+            os_name="linux"
+        fi
+        
+        echo "$os_name"
+    }
+
+    get_linux_distro() {
+        if [ -f /etc/os-release ]; then
+            source /etc/os-release
+            echo "$ID"
+        elif [ -f /etc/lsb-release ]; then
+            source /etc/lsb-release
+            echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]'
+        elif [ -f /etc/debian_version ]; then
+            echo "debian"
+        elif [ -f /etc/fedora-release ]; then
+            echo "fedora"
+        elif [ -f /etc/centos-release ]; then
+            echo "centos"
+        else
+            echo "unknown"
+        fi
+    }
 fi
 
-# Check if running on macOS
-check_macos() {
-    if [[ "$(uname)" != "Darwin" ]]; then
-        mk_log "This script is for macOS only. Exiting." "false" "red"
+# Get the current OS
+CURRENT_OS=$(detect_os)
+
+# Check if OS is supported
+check_os_support() {
+    if [[ "$CURRENT_OS" != "macos" && "$CURRENT_OS" != "linux" ]]; then
+        mk_log "This script only supports macOS and Linux. Detected OS: $CURRENT_OS" "false" "red"
         exit 1
     fi
 }
@@ -122,10 +155,102 @@ check_neovim_installed() {
     fi
 }
 
-# Install Neovim using Homebrew
+# Install Neovim using appropriate method for the OS
 install_neovim() {
     mk_log "Installing Neovim..." "false" "green"
-    brew install neovim
+    
+    case "$CURRENT_OS" in
+        "macos")
+            # For macOS, prefer Homebrew
+            if check_brew_installed; then
+                brew install neovim
+            else
+                mk_log "
+Homebrew is not installed. To install Neovim on macOS:
+1. Install Homebrew first: ./install_brew.sh
+2. Then run this script again
+" "true" "red"
+                return 1
+            fi
+            ;;
+            
+        "linux")
+            # For Linux, choose the appropriate package manager
+            local distro=$(get_linux_distro)
+            
+            case "$distro" in
+                "ubuntu"|"debian"|"pop"|"elementary"|"linuxmint")
+                    # First try the Neovim PPA for latest version
+                    read -p "Would you like to install the latest version from the Neovim PPA? (y/n): " use_ppa
+                    if [[ "$use_ppa" =~ ^[Yy]$ ]]; then
+                        sudo add-apt-repository ppa:neovim-ppa/stable -y
+                        sudo apt update
+                        sudo apt install -y neovim
+                    else
+                        # Use the distribution's version
+                        sudo apt update
+                        sudo apt install -y neovim
+                    fi
+                    ;;
+                    
+                "fedora")
+                    sudo dnf install -y neovim
+                    ;;
+                    
+                "centos"|"rhel")
+                    # For CentOS/RHEL, check version and install from EPEL or snap
+                    if rpm -E %{rhel} | grep -q '^[78]'; then
+                        sudo yum install -y epel-release
+                        sudo yum install -y neovim
+                    else
+                        mk_log "
+Installing from EPEL repository failed. 
+Trying snap (make sure snap is installed)...
+" "false" "red"
+                        sudo snap install --beta nvim --classic
+                    fi
+                    ;;
+                    
+                "arch"|"manjaro")
+                    sudo pacman -Sy neovim
+                    ;;
+                    
+                "opensuse"|"suse")
+                    sudo zypper install -y neovim
+                    ;;
+                    
+                *)
+                    # Try using AppImage as a fallback for unsupported distros
+                    mk_log "
+Distribution not directly supported. Trying AppImage installation...
+" "false" "yellow"
+
+                    # Create directory for binaries if it doesn't exist
+                    mkdir -p "$HOME/.local/bin"
+                    
+                    # Download latest AppImage
+                    curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
+                    chmod u+x nvim.appimage
+                    
+                    # Move to local bin and create symlink
+                    mv nvim.appimage "$HOME/.local/bin/"
+                    ln -sf "$HOME/.local/bin/nvim.appimage" "$HOME/.local/bin/nvim"
+                    
+                    # Add to PATH if not already there
+                    if ! grep -q "$HOME/.local/bin" "$HOME/.bashrc"; then
+                        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+                        export PATH="$HOME/.local/bin:$PATH"
+                    fi
+                    
+                    # Show message about path
+                    mk_log "
+Neovim AppImage installed to $HOME/.local/bin/nvim
+Make sure this directory is in your PATH.
+" "false" "green"
+                    ;;
+            esac
+            ;;
+    esac
     
     # Check if installation was successful
     if check_neovim_installed; then
@@ -168,19 +293,16 @@ echo -e "(mail: martin.balcewicz@rockphysics.org)"
 echo -e "----------------------------------\033[0m"
 echo ""
 
-# Check if running on macOS
-check_macos
+# Check if OS is supported
+check_os_support
 
-# Check if Homebrew is installed
-if ! check_brew_installed; then
-    mk_log "
-Homebrew is required but not installed!
-
-Please install Homebrew first using the install_brew.sh script:
-./install_brew.sh
-" "true" "red"
-    exit 1
+# Show detected operating system
+mk_log "Detected operating system: $CURRENT_OS" "false" "green"
+if [[ "$CURRENT_OS" == "linux" ]]; then
+    LINUX_DISTRO=$(get_linux_distro)
+    mk_log "Linux distribution: $LINUX_DISTRO" "false" "green"
 fi
+echo ""
 
 # Check if Neovim is already installed
 if check_neovim_installed; then
@@ -194,8 +316,47 @@ $(nvim --version | head -n 1)
     # Ask if user wants to update
     read -p "Do you want to update Neovim? (y/n): " update_choice
     if [[ "$update_choice" =~ ^[Yy]$ ]]; then
-        mk_log "Updating Neovim..." "false" "green"
-        brew upgrade neovim
+        if [[ "$CURRENT_OS" == "macos" && $(check_brew_installed) -eq 0 ]]; then
+            mk_log "Updating Neovim via Homebrew..." "false" "green"
+            brew upgrade neovim
+        elif [[ "$CURRENT_OS" == "linux" ]]; then
+            local distro=$(get_linux_distro)
+            
+            case "$distro" in
+                "ubuntu"|"debian"|"pop"|"elementary"|"linuxmint")
+                    mk_log "Updating Neovim via apt..." "false" "green"
+                    sudo apt update && sudo apt upgrade -y neovim
+                    ;;
+                "fedora")
+                    mk_log "Updating Neovim via dnf..." "false" "green"
+                    sudo dnf upgrade -y neovim
+                    ;;
+                "centos"|"rhel")
+                    mk_log "Updating Neovim via yum..." "false" "green"
+                    sudo yum update -y neovim
+                    ;;
+                "arch"|"manjaro")
+                    mk_log "Updating Neovim via pacman..." "false" "green"
+                    sudo pacman -Syu neovim
+                    ;;
+                "opensuse"|"suse")
+                    mk_log "Updating Neovim via zypper..." "false" "green"
+                    sudo zypper update -y neovim
+                    ;;
+                *)
+                    # If using AppImage, just reinstall
+                    if [[ -f "$HOME/.local/bin/nvim.appimage" ]]; then
+                        mk_log "Updating Neovim AppImage..." "false" "green"
+                        curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
+                        chmod u+x nvim.appimage
+                        mv nvim.appimage "$HOME/.local/bin/"
+                    else
+                        mk_log "Cannot determine how to update Neovim on this distribution." "false" "red"
+                    fi
+                    ;;
+            esac
+        fi
+        
         mk_log "
 Neovim has been updated!
 
@@ -227,7 +388,11 @@ $(nvim --version | head -n 1)
         else
             mk_log "
 Failed to install Neovim. Please try again or install manually:
-brew install neovim
+- macOS: brew install neovim
+- Ubuntu/Debian: sudo apt install neovim
+- Fedora: sudo dnf install neovim
+- CentOS/RHEL: sudo yum install neovim
+- Arch: sudo pacman -S neovim
 " "true" "red"
             exit 1
         fi
