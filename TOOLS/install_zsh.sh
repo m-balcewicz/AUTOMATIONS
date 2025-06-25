@@ -77,9 +77,10 @@ Homebrew is not installed. To install ZSH on macOS:
                     sudo pacman -Sy zsh
                     ;;
                     
-                "opensuse"|"suse")
+                "opensuse"|"opensuse-leap"|"opensuse-tumbleweed"|"suse")
                     mk_log "Installing ZSH via zypper..." "false" "green"
-                    sudo zypper install -y zsh
+                    sudo zypper --non-interactive refresh
+                    sudo zypper --non-interactive install zsh
                     ;;
                     
                 *)
@@ -91,10 +92,36 @@ For example:
 - Fedora: sudo dnf install zsh
 - CentOS/RHEL: sudo yum install zsh
 - Arch: sudo pacman -S zsh
+- openSUSE: sudo zypper install zsh
 " "true" "red"
                     exit 1
                     ;;
             esac
+            
+            # Verify zsh is in PATH after installation
+            if ! command -v zsh &>/dev/null; then
+                mk_log "
+ZSH was installed but is not in your PATH.
+Common locations for ZSH:
+- /usr/bin/zsh
+- /bin/zsh
+- /usr/local/bin/zsh
+
+Please check if ZSH is installed at any of these locations.
+" "false" "red"
+                
+                # Try to locate zsh executable
+                if [ -f "/usr/bin/zsh" ]; then
+                    export PATH="$PATH:/usr/bin"
+                    mk_log "Found ZSH at /usr/bin/zsh. Added to PATH for this session." "false" "green"
+                elif [ -f "/bin/zsh" ]; then
+                    export PATH="$PATH:/bin"
+                    mk_log "Found ZSH at /bin/zsh. Added to PATH for this session." "false" "green"
+                elif [ -f "/usr/local/bin/zsh" ]; then
+                    export PATH="$PATH:/usr/local/bin"
+                    mk_log "Found ZSH at /usr/local/bin/zsh. Added to PATH for this session." "false" "green"
+                fi
+            fi
             ;;
             
         *)
@@ -412,6 +439,21 @@ Version information:
 $(zsh --version)
 " "true" "green"
             
+            # Update available shells list after installing zsh
+            echo -e "\n\033[32m----------------------------------"
+            echo -e "Updated available shells on this system:"
+            echo -e "----------------------------------\033[0m"
+            list_available_shells | while read -r shell; do
+                if [ -n "$shell" ] && [ -x "$shell" ]; then
+                    if [ "$shell" == "$current_shell" ]; then
+                        echo -e "\033[32m$shell (current)\033[0m"
+                    else
+                        echo "$shell"
+                    fi
+                fi
+            done
+            echo ""
+            
             # Now ask if they want to change their shell to ZSH
             read -p "Do you want to change your default shell to ZSH? (y/n): " change_choice
             if [[ "$change_choice" =~ ^[Yy]$ ]]; then
@@ -443,6 +485,7 @@ Failed to install ZSH. Please try to install it manually using your package mana
 - Fedora: sudo dnf install zsh
 - CentOS/RHEL: sudo yum install zsh
 - Arch: sudo pacman -S zsh
+- openSUSE: sudo zypper install zsh
 " "true" "red"
         fi
     else
