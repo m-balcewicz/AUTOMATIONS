@@ -57,6 +57,9 @@ mk_log() {
     # Define ANSI color codes
     local GREEN="\033[32m"
     local RED="\033[31m"
+    local YELLOW="\033[33m"
+    local BLUE="\033[34m"
+    local PURPLE="\033[35m"
     local DEFAULT="\033[0m"
     
     # Set the color based on the parameter
@@ -65,6 +68,12 @@ mk_log() {
         selected_color="$GREEN"
     elif [ "$color" == "red" ]; then
         selected_color="$RED"
+    elif [ "$color" == "yellow" ]; then
+        selected_color="$YELLOW"
+    elif [ "$color" == "blue" ]; then
+        selected_color="$BLUE"
+    elif [ "$color" == "purple" ]; then
+        selected_color="$PURPLE"
     fi
     
     # Apply color to each line
