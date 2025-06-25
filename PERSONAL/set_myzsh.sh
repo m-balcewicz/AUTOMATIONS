@@ -18,6 +18,16 @@ else
     echo "Warning: Could not find shell utilities at $UTILS_PATH"
     echo "Using local function implementations instead."
     
+    # Define color constants to match p10k theme
+    # These hex colors are translated to 256-color ANSI codes for terminal use
+    CUSTOM_GREEN="\033[38;5;107m"    # ~#74975A
+    CUSTOM_RED="\033[38;5;180m"      # ~#C7947B
+    CUSTOM_YELLOW="\033[38;5;187m"   # ~#DDDBAE
+    CUSTOM_PURPLE="\033[38;5;140m"   # ~#BD8BBE
+    CUSTOM_BLUE="\033[38;5;75m"      # ~#649CD3
+    CUSTOM_LIGHT_BLUE="\033[38;5;153m" # ~#A7DBFC
+    DEFAULT="\033[0m"
+    
     # Local fallback implementations of utility functions
     print_style() {
         local message="$1"
@@ -60,17 +70,18 @@ else
         local print_fancy="${2:-false}"
         local color="${3:-default}"
         
-        # Define ANSI color codes
-        local GREEN="\033[32m"
-        local RED="\033[31m"
-        local DEFAULT="\033[0m"
-        
         # Set the color based on the parameter
         local selected_color="$DEFAULT"
         if [ "$color" == "green" ]; then
-            selected_color="$GREEN"
+            selected_color="$CUSTOM_GREEN"
         elif [ "$color" == "red" ]; then
-            selected_color="$RED"
+            selected_color="$CUSTOM_RED"
+        elif [ "$color" == "yellow" ]; then
+            selected_color="$CUSTOM_YELLOW"
+        elif [ "$color" == "blue" ]; then
+            selected_color="$CUSTOM_BLUE"
+        elif [ "$color" == "purple" ]; then
+            selected_color="$CUSTOM_PURPLE"
         fi
         
         # Apply color to each line
@@ -113,7 +124,7 @@ check_oh_my_zsh() {
         mk_log "
 Oh-My-ZSH is not installed.
 We recommend installing it for best experience.
-" "true" "red"
+" "true" "yellow"
         
         read -p "Do you want to continue anyway? (y/n): " continue_choice
         if [[ ! "$continue_choice" =~ ^[Yy]$ ]]; then
@@ -127,7 +138,7 @@ We recommend installing it for best experience.
 backup_zsh_config() {
     local backup_dir="$HOME/.zsh_backup_$(date +%Y%m%d_%H%M%S)"
     
-    mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "green"
+    mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "blue"
     mkdir -p "$backup_dir"
     
     # Backup .zshrc if it exists
@@ -164,8 +175,8 @@ copy_zsh_files() {
     # List of files to copy
     local files=("system.zsh" "dev.zsh" "macos.zsh" "navigation.zsh" "remote.zsh" "python.zsh")
     
-    mk_log "Source directory: $source_dir" "false" "default"
-    mk_log "Destination directory: $dest_dir" "false" "default"
+    mk_log "Source directory: $source_dir" "false" "blue"
+    mk_log "Destination directory: $dest_dir" "false" "blue"
     
     # Copy each file if it exists
     local copied_count=0
@@ -205,13 +216,13 @@ copy_zsh_files() {
             echo "  Add this line to your .zshrc if missing: source \$ZSH/oh-my-zsh.sh"
         fi
     else
-        mk_log "Warning: Only $verified_count/${#files[@]} files were copied successfully." "false" "red"
+        mk_log "Warning: Only $verified_count/${#files[@]} files were copied successfully." "false" "yellow"
     fi
     
     # Copy p10k.zsh file to home directory
     if [ -f "$source_dir/p10k.zsh" ]; then
         cp "$source_dir/p10k.zsh" "$HOME/.p10k.zsh"
-        echo "Copied p10k.zsh (with terminal styling) to $HOME/.p10k.zsh"
+        echo "✓ Copied p10k.zsh (with terminal styling) to $HOME/.p10k.zsh"
     else
         echo "Warning: p10k.zsh not found in $source_dir"
     fi
@@ -228,7 +239,7 @@ copy_ssh_config() {
     
     # Only proceed if there's a source SSH config
     if [ ! -f "$source_dir/$config_file" ]; then
-        mk_log "No SSH config found at $source_dir/$config_file - skipping SSH configuration" "false" "default"
+        mk_log "No SSH config found at $source_dir/$config_file - skipping SSH configuration" "false" "yellow"
         return 0
     fi
     
@@ -240,18 +251,18 @@ copy_ssh_config() {
     
     # Check if destination config already exists
     if [ -f "$dest_dir/$config_file" ]; then
-        mk_log "SSH config already exists at $dest_dir/$config_file" "false" "default"
+        mk_log "SSH config already exists at $dest_dir/$config_file" "false" "yellow"
         
         # Create backup of existing config
         cp "$dest_dir/$config_file" "$dest_dir/${config_file}.bak.$(date +%Y%m%d%H%M%S)"
-        mk_log "Created backup of existing SSH config" "false" "green"
+        mk_log "Created backup of existing SSH config" "false" "blue"
         
         # Ask if user wants to merge or replace
         read -p "Would you like to merge with (m) or replace (r) your existing SSH config? (m/r): " ssh_config_choice
         
         if [[ "$ssh_config_choice" == "m" ]]; then
             # Merge the configs - add new entries that don't exist
-            mk_log "Merging SSH configurations..." "false" "green"
+            mk_log "Merging SSH configurations..." "false" "blue"
             
             # Create temporary merge file
             local temp_file=$(mktemp)
@@ -300,11 +311,11 @@ copy_ssh_config() {
 }
 
 # Display welcome message
-echo -e "\033[32m----------------------------------"
-echo -e "Welcome to Personal ZSH Setup"
-echo -e "Developed 06/2025 by Martin Balcewicz"
-echo -e "(mail: martin.balcewicz@rockphysics.org)"
-echo -e "----------------------------------\033[0m"
+echo -e "\033[35m----------------------------------\033[0m"
+echo -e "\033[35mWelcome to Personal ZSH Setup\033[0m"
+echo -e "\033[35mDeveloped 06/2025 by Martin Balcewicz\033[0m"
+echo -e "\033[35m(mail: martin.balcewicz@rockphysics.org)\033[0m"
+echo -e "\033[35m----------------------------------\033[0m"
 echo ""
 
 # Check prerequisites
@@ -343,9 +354,10 @@ Your SSH configuration has been securely set up in ~/.ssh/config.
 SSH connections are now configured with simple aliases in remote.zsh.
 
 NEXT STEPS:
-1. Close this terminal window completely
-2. Open a new terminal window to activate your customized ZSH environment
-3. To update your settings in the future, edit the files in:
+1. Set your terminal font to 'JetBrainsMonoNL Nerd Font' at size 12 for the best experience.
+2. Close this terminal window completely
+3. Open a new terminal window to activate your customized ZSH environment
+4. To update your settings in the future, edit the files in:
    $(dirname "$(realpath "$0")")
    and run this script again
 
@@ -353,19 +365,19 @@ To see all available aliases, type 'alias' in your terminal.
 " "true" "green"
 
 echo ""
-echo -e "\033[32m----------------------------------"
-echo -e "Personal ZSH Setup Complete!"
-echo -e "----------------------------------\033[0m"
+echo -e "\033[35m----------------------------------\033[0m"
+echo -e "\033[35mPersonal ZSH Setup Complete!\033[0m"
+echo -e "\033[35m----------------------------------\033[0m"
 echo ""
 
 # Instead of trying to source ZSH files from Bash, show instructions
-echo -e "\033[33mIMPORTANT: To apply changes, you need to:\033[0m"
+echo -e "IMPORTANT: To apply changes, you need to:"
 echo -e "1. Close this terminal window completely"
 echo -e "2. Open a new terminal window, which will start ZSH with your new configuration"
-echo -e "\033[33m- OR -\033[0m"
+echo -e "- OR -"
 echo -e "Run the following command to switch to ZSH with your new settings:"
-echo -e "\033[32m    exec zsh\033[0m"
+echo -e "    exec zsh"
 echo ""
-echo -e "\033[33mTo verify all configuration files are loaded, run:\033[0m"
-echo -e "\033[32m    ls -la ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/*.zsh\033[0m"
+echo -e "To verify all configuration files are loaded, run:"
+echo -e "    ls -la ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/*.zsh"
 echo ""
