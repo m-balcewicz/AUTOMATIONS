@@ -4,8 +4,8 @@
 # Author: Martin Balcewicz
 # Email: martin.balcewicz@rockphysics.org
 # Date: June 2025
-# Description: Installs or updates Homebrew package manager
-#              for macOS and Linux systems
+# Description: Installs or updates the Homebrew package manager
+#              for macOS and Linux systems.
 # ---------------------------------------
 
 # Source the shell utilities

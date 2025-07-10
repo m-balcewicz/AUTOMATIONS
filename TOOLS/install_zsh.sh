@@ -4,8 +4,8 @@
 # Author: Martin Balcewicz
 # Email: martin.balcewicz@rockphysics.org
 # Date: June 2025
-# Description: Checks current shell, lists available shells,
-#              and helps switch to zsh if desired
+# Description: Installs Zsh, Oh-My-Zsh, and sets Zsh as the
+#              default shell for the current user.
 # ---------------------------------------
 
 # Source the shell utilities
