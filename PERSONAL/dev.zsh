@@ -5,10 +5,6 @@
 # Description: Development-related aliases and functions.
 # ---------------------------------------
 
-# -------------------------------------------------------
-# Development-related aliases and functions
-# -------------------------------------------------------
-
 # Git shortcuts
 alias gs="git status"
 alias ga="git add"
