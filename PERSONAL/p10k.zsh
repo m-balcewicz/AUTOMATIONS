@@ -10,21 +10,6 @@
 # Type `p10k configure` to generate another config.
 #
 # Config file for Powerlevel10k with the style of Pure (https://github.com/sindresorhus/pure).
-#
-# Differences from Pure:
-#
-#   - Git:
-#     - `@c4d3ec2c` instead of something like `v1.4.0~11` when in detached HEAD state.
-#     - No automatic `git fetch` (the same as in Pure with `PURE_GIT_PULL=0`).
-#
-# Apart from the differences listed above, the replication of Pure prompt is exact. This includes
-# even the questionable parts. For example, just like in Pure, there is no indication of Git status
-# being stale; prompt symbol is the same in command, visual and overwrite vi modes; when prompt
-# doesn't fit on one line, it wraps around with no attempt to shorten it.
-#
-# If you like the general style of Pure but not particularly attached to all its quirks, type
-# `p10k configure` and pick "Lean" style. This will give you slick minimalist prompt while taking
-# advantage of Powerlevel10k features that aren't present in Pure.
 
 # Temporarily change options.
 'builtin' 'local' '-a' 'p10k_config_opts'
@@ -61,17 +46,27 @@
   local cyan='6'
   local white='7'
 
+  # Custom function to display the conda environment.
+  # This is the only method that has proven reliable on this system.
+  function prompt_my_conda() {
+    if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+      # Hardcode color '107' to avoid scope issues during zsh initialization.
+      p10k segment -f '107' -t "($CONDA_DEFAULT_ENV)"
+    fi
+  }
+
   # Left prompt segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     context                   # user@host
     dir                       # current directory
     vcs                       # git status
-    virtualenv                # python virtual environment
     prompt_char               # prompt symbol
   )
 
   # Right prompt segments.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+    my_conda                  # OUR CUSTOM conda environment segment
+    virtualenv                # python virtual environment
     time                      # current time
   )
 
@@ -108,7 +103,11 @@
   typeset -g POWERLEVEL9K_VIRTUALENV_FOREGROUND=$custom_green
   # Don't show Python version.
   typeset -g POWERLEVEL9K_VIRTUALENV_SHOW_PYTHON_VERSION=false
-  typeset -g POWERLEVEL9K_VIRTUALENV_{LEFT,RIGHT}_DELIMITER=
+  typeset -g POWERLEVEL9K_VIRTUALENV_LEFT_DELIMITER='('
+  typeset -g POWERLEVEL9K_VIRTUALENV_RIGHT_DELIMITER=')'
+
+  # We no longer need the built-in conda configuration
+  # as our custom function 'prompt_my_conda' handles it.
 
   # Custom dark blue for current directory.
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=$custom_dark_blue
@@ -198,7 +197,7 @@
   #   - verbose: Enable instant prompt and print a warning when detecting console output during
   #              zsh initialization. Choose this if you've never tried instant prompt, haven't
   #              seen the warning, or if you are unsure what this all means.
-  typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
+  typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
   # Hot reload allows you to change POWERLEVEL9K options after Powerlevel10k has been initialized.
   # For example, you can type POWERLEVEL9K_BACKGROUND=red and see your prompt turn red. Hot reload

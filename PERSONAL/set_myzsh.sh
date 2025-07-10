@@ -141,22 +141,18 @@ backup_zsh_config() {
     mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "blue"
     mkdir -p "$backup_dir"
     
-    # Backup .zshrc if it exists
-    if [ -f "$HOME/.zshrc" ]; then
-        cp "$HOME/.zshrc" "$backup_dir/.zshrc"
-    fi
+    # Backup main config files
+    [ -f "$HOME/.zshrc" ] && cp "$HOME/.zshrc" "$backup_dir/"
+    [ -f "$HOME/.p10k.zsh" ] && cp "$HOME/.p10k.zsh" "$backup_dir/"
     
     # Backup all custom ZSH files
-    custom_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    local custom_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     if [ -d "$custom_dir" ]; then
         mkdir -p "$backup_dir/custom"
-        if [ -f "$custom_dir/aliases.zsh" ]; then cp "$custom_dir/aliases.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/system.zsh" ]; then cp "$custom_dir/system.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/dev.zsh" ]; then cp "$custom_dir/dev.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/macos.zsh" ]; then cp "$custom_dir/macos.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/navigation.zsh" ]; then cp "$custom_dir/navigation.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/remote.zsh" ]; then cp "$custom_dir/remote.zsh" "$backup_dir/custom/"; fi
-        if [ -f "$custom_dir/python.zsh" ]; then cp "$custom_dir/python.zsh" "$backup_dir/custom/"; fi
+        # Copy only the files that are actually being used
+        for file in system.zsh dev.zsh macos.zsh navigation.zsh remote.zsh python.zsh; do
+            [ -f "$custom_dir/$file" ] && cp "$custom_dir/$file" "$backup_dir/custom/"
+        done
     fi
     
     mk_log "Backup created successfully!" "false" "green"
@@ -166,68 +162,35 @@ backup_zsh_config() {
 # Function to copy all zsh files to their destinations
 copy_zsh_files() {
     # Define source and destination directories
-    local source_dir="$(dirname "$(realpath "$0")")"
+    local source_dir
+    source_dir="$(dirname "$(realpath "$0")")"
     local dest_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     
     # Create destination directory if it doesn't exist
     mkdir -p "$dest_dir"
     
-    # List of files to copy
+    mk_log "Copying ZSH configuration files..." "false" "blue"
+    
+    # Copy main config files
+    cp "$source_dir/zshrc" "$HOME/.zshrc"
+    echo "✓ Copied zshrc to $HOME/.zshrc"
+    cp "$source_dir/p10k.zsh" "$HOME/.p10k.zsh"
+    echo "✓ Copied p10k.zsh to $HOME/.p10k.zsh"
+
+    # List of modular files to copy
     local files=("system.zsh" "dev.zsh" "macos.zsh" "navigation.zsh" "remote.zsh" "python.zsh")
     
-    mk_log "Source directory: $source_dir" "false" "blue"
-    mk_log "Destination directory: $dest_dir" "false" "blue"
-    
-    # Copy each file if it exists
-    local copied_count=0
+    # Copy each modular file
     for file in "${files[@]}"; do
         if [ -f "$source_dir/$file" ]; then
             cp "$source_dir/$file" "$dest_dir/"
             echo "✓ Copied $file to $dest_dir/"
-            copied_count=$((copied_count+1))
         else
             echo "✗ Warning: $file not found in $source_dir"
         fi
     done
     
-    # Verify files were copied correctly
-    echo ""
-    echo "Verifying files in destination directory..."
-    local verified_count=0
-    for file in "${files[@]}"; do
-        if [ -f "$dest_dir/$file" ]; then
-            echo "✓ Verified: $file exists in $dest_dir"
-            verified_count=$((verified_count+1))
-        else
-            echo "✗ Error: $file is missing from $dest_dir"
-        fi
-    done
-    
-    # Add a check to verify Oh-My-ZSH will load these files
-    echo ""
-    if [ $verified_count -eq ${#files[@]} ]; then
-        mk_log "All ZSH files ($verified_count/${#files[@]}) have been copied successfully!" "false" "green"
-        
-        # Verify .zshrc loads Oh-My-ZSH
-        if grep -q "source \$ZSH/oh-my-zsh.sh" "$HOME/.zshrc"; then
-            echo "✓ Verified: .zshrc correctly sources Oh-My-ZSH"
-        else
-            echo "✗ Warning: Your .zshrc might not be loading Oh-My-ZSH correctly"
-            echo "  Add this line to your .zshrc if missing: source \$ZSH/oh-my-zsh.sh"
-        fi
-    else
-        mk_log "Warning: Only $verified_count/${#files[@]} files were copied successfully." "false" "yellow"
-    fi
-    
-    # Copy p10k.zsh file to home directory
-    if [ -f "$source_dir/p10k.zsh" ]; then
-        cp "$source_dir/p10k.zsh" "$HOME/.p10k.zsh"
-        echo "✓ Copied p10k.zsh (with terminal styling) to $HOME/.p10k.zsh"
-    else
-        echo "Warning: p10k.zsh not found in $source_dir"
-    fi
-    
-    mk_log "All ZSH files have been copied to $dest_dir" "false" "green"
+    mk_log "All ZSH files have been copied." "false" "green"
     return 0
 }
 
@@ -341,27 +304,13 @@ copy_ssh_config
 mk_log "
 Personal ZSH environment has been set up successfully!
 
-Your aliases are now organized into these categories:
-- system.zsh: System-related aliases and functions
-- dev.zsh: Development-related aliases
-- macos.zsh: macOS-specific aliases and functions
-- navigation.zsh: Directory navigation aliases
-- remote.zsh: SSH and remote connection aliases (using secure SSH config)
-- python.zsh: Python-related functions
-- p10k.zsh: Terminal appearance settings and prompt configuration (at ~/.p10k.zsh)
+Configuration files have been copied:
+- Modular aliases -> ~/.oh-my-zsh/custom/
+- Main config -> ~/.zshrc
+- Prompt theme -> ~/.p10k.zsh
+- SSH config handled.
 
-Your SSH configuration has been securely set up in ~/.ssh/config.
-SSH connections are now configured with simple aliases in remote.zsh.
-
-NEXT STEPS:
-1. Set your terminal font to 'JetBrainsMonoNL Nerd Font' at size 12 for the best experience.
-2. Close this terminal window completely
-3. Open a new terminal window to activate your customized ZSH environment
-4. To update your settings in the future, edit the files in:
-   $(dirname "$(realpath "$0")")
-   and run this script again
-
-To see all available aliases, type 'alias' in your terminal.
+To apply changes, run: exec zsh
 " "true" "green"
 
 echo ""
