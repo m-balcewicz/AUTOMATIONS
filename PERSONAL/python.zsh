@@ -1,6 +1,9 @@
-# -------------------------------------------------------
-# Python-related functions and aliases
-# -------------------------------------------------------
+# ---------------------------------------
+# Filename: python.zsh
+# Author: Martin Balcewicz
+# Date: June 2025
+# Description: Python-related functions and aliases.
+# ---------------------------------------
 
 # Python shortcuts
 alias py="python"

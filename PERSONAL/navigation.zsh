@@ -1,6 +1,9 @@
-# -------------------------------------------------------
-# Directory navigation aliases
-# -------------------------------------------------------
+# ---------------------------------------
+# Filename: navigation.zsh
+# Author: Martin Balcewicz
+# Date: June 2025
+# Description: Directory navigation aliases.
+# ---------------------------------------
 
 # Terminal UI with colorized ls
 alias lsd='lsd --icon=always'

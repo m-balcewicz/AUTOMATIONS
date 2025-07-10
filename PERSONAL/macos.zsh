@@ -5,10 +5,6 @@
 # Description: macOS-specific aliases and configurations.
 # ---------------------------------------
 
-# -------------------------------------------------------
-# macOS-specific aliases and configurations
-# -------------------------------------------------------
-
 # Language and locale settings
 export LANG=en_GB.UTF-8
 export LC_ALL=en_GB.UTF-8

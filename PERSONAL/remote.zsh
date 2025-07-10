@@ -1,6 +1,9 @@
-# -------------------------------------------------------
-# SSH and remote connection aliases
-# -------------------------------------------------------
+# ---------------------------------------
+# Filename: remote.zsh
+# Author: Martin Balcewicz
+# Date: June 2025
+# Description: SSH and remote connection aliases.
+# ---------------------------------------
 
 # Cluster connections - using SSH config file
 alias cluster1="ssh cluster1"

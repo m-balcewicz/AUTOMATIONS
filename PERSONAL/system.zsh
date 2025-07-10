@@ -1,6 +1,9 @@
-# -------------------------------------------------------
-# System-related aliases and functions
-# -------------------------------------------------------
+# ---------------------------------------
+# Filename: system.zsh
+# Author: Martin Balcewicz
+# Date: June 2025
+# Description: System-related aliases and functions.
+# ---------------------------------------
 
 # Shell editing/reloading
 alias zshconfig="$EDITOR ~/.zshrc"
