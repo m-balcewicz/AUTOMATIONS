@@ -1,3 +1,10 @@
+# ---------------------------------------
+# Filename: macos.zsh
+# Author: Martin Balcewicz
+# Date: June 2025
+# Description: macOS-specific aliases and configurations.
+# ---------------------------------------
+
 # -------------------------------------------------------
 # macOS-specific aliases and configurations
 # -------------------------------------------------------
