@@ -24,33 +24,9 @@ fi
 
 # Source OS detection
 source "$SCRIPT_DIR/detect_os.sh"
-        elif [ "$style" == "section" ]; then
-            style_chars="="
-        elif [ "$style" == "decorative" ]; then
-            style_chars="*"
-        fi
-        
-        # Find the maximum line length
-        local max_length=0
-        while IFS= read -r line; do
-            # Strip ANSI color codes when calculating length
-            local stripped_line=$(echo -e "$line" | sed 's/\x1b\[[0-9;]*m//g')
-            if [ ${#stripped_line} -gt $max_length ]; then
-                max_length=${#stripped_line}
-            fi
-        done <<< "$message"
-        
-        # Print the style line
-        echo -e "$(printf "%${max_length}s" | tr ' ' "$style_chars")"
-        
-        # Print each line of the message
-        while IFS= read -r line; do
-            echo -e "$line"
-        done <<< "$message"
-        
-        # Print the bottom style line
-        echo -e "$(printf "%${max_length}s" | tr ' ' "$style_chars")"
-    }
+
+# Configuration variables
+NVIM_VERSION="v0.9.5"  # Latest stable version
 
     mk_log() {
         local message="$1"

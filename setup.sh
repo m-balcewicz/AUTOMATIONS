@@ -10,18 +10,10 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 UTILS_PATH="${SCRIPT_DIR}/utils/shell_utils.sh"
 
-# Debug output for troubleshooting
-echo "DEBUG: Script directory: $SCRIPT_DIR"
-echo "DEBUG: Utils path: $UTILS_PATH"
-echo "DEBUG: Utils file exists: $([ -f "$UTILS_PATH" ] && echo "YES" || echo "NO")"
-
 # Source utilities if available
 if [ -f "$UTILS_PATH" ]; then
-    echo "DEBUG: Sourcing utils from $UTILS_PATH"
     source "$UTILS_PATH"
-    echo "DEBUG: Utils sourced successfully"
 else
-    echo "DEBUG: Utils not found, using fallback functions"
     # Simple fallback logging functions
     mk_log() { echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"; }
     red() { echo -e "\033[31m$1\033[0m"; }
@@ -33,11 +25,8 @@ fi
 
 # Source OS detection
 if [ -f "$SCRIPT_DIR/data/detect_os.sh" ]; then
-    echo "DEBUG: Sourcing OS detection from $SCRIPT_DIR/data/detect_os.sh"
     source "$SCRIPT_DIR/data/detect_os.sh"
-    echo "DEBUG: OS detection sourced successfully"
 else
-    echo "DEBUG: OS detection not found, using fallback"
     # Fallback OS detection
     get_os_type() {
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then

@@ -31,8 +31,73 @@ detect_os() {
     fi
 }
 
+# Check if oh-my-zsh is installed
+check_oh_my_zsh() {
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        mk_log "Oh-My-Zsh is not installed!" "false" "red" 2>/dev/null || echo "❌ Oh-My-Zsh not found!"
+        echo ""
+        echo "Your personal ZSH configuration requires Oh-My-Zsh to be installed first."
+        echo ""
+        echo "Options:"
+        echo "1) Install Oh-My-Zsh now (recommended)"
+        echo "2) Continue without Oh-My-Zsh (will cause errors)"
+        echo "3) Exit and run complete setup instead"
+        echo ""
+        echo -n "Enter your choice [1-3]: "
+        read -r choice
+        
+        case "$choice" in
+            1)
+                mk_log "Installing Oh-My-Zsh..." "false" "blue" 2>/dev/null || echo "📦 Installing Oh-My-Zsh..."
+                if [ -x "$SCRIPT_DIR/../data/install_oh_my_zsh.sh" ]; then
+                    "$SCRIPT_DIR/../data/install_oh_my_zsh.sh"
+                    if [ $? -ne 0 ]; then
+                        mk_log "Oh-My-Zsh installation failed!" "false" "red" 2>/dev/null || echo "❌ Installation failed!"
+                        return 1
+                    fi
+                else
+                    # Fallback: direct installation
+                    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+                fi
+                ;;
+            2)
+                mk_log "Continuing without Oh-My-Zsh - expect errors!" "false" "yellow" 2>/dev/null || echo "⚠ Continuing without Oh-My-Zsh!"
+                ;;
+            3)
+                echo "Please run: ./setup.sh and choose option 1 for complete setup"
+                exit 0
+                ;;
+            *)
+                echo "Invalid choice. Exiting."
+                exit 1
+                ;;
+        esac
+    else
+        mk_log "Oh-My-Zsh is already installed" "false" "green" 2>/dev/null || echo "✓ Oh-My-Zsh found!"
+    fi
+    return 0
+}
+
 # Backup existing configuration
 backup_zsh_config() {
+    local backup_dir="$HOME/.zsh_backup_$(date +%Y%m%d_%H%M%S)"
+    
+    mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "blue" 2>/dev/null || echo "Creating backup..."
+    mkdir -p "$backup_dir"
+    
+    # Backup main config files
+    [ -f "$HOME/.zshrc" ] && cp "$HOME/.zshrc" "$backup_dir/"
+    [ -f "$HOME/.p10k.zsh" ] && cp "$HOME/.p10k.zsh" "$backup_dir/"
+    
+    # Backup custom ZSH files
+    local custom_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    if [ -d "$custom_dir" ]; then
+        mkdir -p "$backup_dir/custom"
+        cp -r "$custom_dir"/* "$backup_dir/custom/" 2>/dev/null || true
+    fi
+    
+    mk_log "Backup created successfully!" "false" "green" 2>/dev/null || echo "✓ Backup created!"
+}
     local backup_dir="$HOME/.zsh_backup_$(date +%Y%m%d_%H%M%S)"
     
     mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "blue" 2>/dev/null || echo "Creating backup..."
@@ -164,6 +229,11 @@ setup_personal_env() {
     echo "Personal ZSH Environment Setup"
     echo "========================================"
     echo ""
+    
+    # Check for Oh-My-Zsh first
+    if ! check_oh_my_zsh; then
+        return 1
+    fi
     
     # Backup existing config
     backup_zsh_config
