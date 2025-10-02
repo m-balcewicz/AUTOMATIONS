@@ -32,7 +32,7 @@ This document covers common issues encountered during the setup process and thei
 **Solution:**
 ```bash
 # Use the complete reinstall utility
-./utils/fix_ohmyzsh_complete.sh
+./utils/fix_ohmyzsh_reinstall.sh
 ```
 
 ### 2. Syntax Errors in Installation Scripts
@@ -132,7 +132,7 @@ If your shell is completely broken:
 bash
 
 # Run the complete fix
-./utils/fix_ohmyzsh_complete.sh
+./utils/fix_ohmyzsh_reinstall.sh
 
 # Try zsh again
 exec zsh

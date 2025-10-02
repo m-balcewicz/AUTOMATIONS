@@ -48,7 +48,7 @@ AUTOMATIONS/
     ├── demo_utils.sh           # 🎬 Demo and testing tools
     ├── test_personal_setup.sh  # 🧪 Personal setup validation
     ├── fix_ohmyzsh.sh          # 🔧 Oh-My-Zsh repair utility
-    ├── fix_ohmyzsh_complete.sh # 🔧 Complete Oh-My-Zsh reinstall
+    ├── fix_ohmyzsh_reinstall.sh # 🔧 Complete Oh-My-Zsh reinstall
     ├── fix_zsh_diagnosis.sh    # 🔍 ZSH diagnostic tool
     └── fix_zshrc_robust.sh     # 🔧 Robust .zshrc repair
 ```
@@ -86,7 +86,7 @@ cd personal
 ```bash
 # If you're experiencing issues, see TROUBLESHOOTING.md
 # or use the automated fix utilities:
-./utils/fix_ohmyzsh_complete.sh      # Complete Oh-My-Zsh reinstall
+./utils/fix_ohmyzsh_reinstall.sh     # Complete Oh-My-Zsh reinstall
 ./utils/fix_zsh_diagnosis.sh         # Diagnose ZSH issues
 ./utils/fix_zshrc_robust.sh          # Repair .zshrc configuration
 ```
@@ -198,7 +198,7 @@ We provide automated fix utilities in the `utils/` directory:
 
 ```bash
 # Complete Oh-My-Zsh reinstallation (fixes most issues)
-./utils/fix_ohmyzsh_complete.sh
+./utils/fix_ohmyzsh_reinstall.sh
 
 # Diagnose ZSH configuration issues
 ./utils/fix_zsh_diagnosis.sh
@@ -215,7 +215,7 @@ We provide automated fix utilities in the `utils/` directory:
 **1. Oh-My-Zsh installation fails**
 ```bash
 # Use the complete reinstall utility
-./utils/fix_ohmyzsh_complete.sh
+./utils/fix_ohmyzsh_reinstall.sh
 ```
 
 **2. Fonts not displaying correctly**

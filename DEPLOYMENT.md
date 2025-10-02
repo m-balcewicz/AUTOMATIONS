@@ -217,7 +217,7 @@ cat TROUBLESHOOTING.md
 ./utils/fix_zsh_diagnosis.sh
 
 # For Oh-My-Zsh issues
-./utils/fix_ohmyzsh_complete.sh
+./utils/fix_ohmyzsh_reinstall.sh
 ```
 
 ### Permission Issues
