@@ -51,10 +51,10 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     alias localip="ip route get 1 | awk '{print \$NF;exit}'"
     alias netinfo='ip addr show'
     
-    # File operations (Linux-specific ls options)
-    alias ls='ls --color=auto'
-    alias ll='ls -alh --color=auto'
-    alias la='ls -lah --color=auto'
+    # File operations (Linux-specific ls options) - handled by navigation.zsh
+    # alias ls='ls --color=auto'
+    # alias ll='ls -alh --color=auto'
+    # alias la='ls -lah --color=auto'
     alias l='ls -lh --color=auto'
     
     # Directory operations

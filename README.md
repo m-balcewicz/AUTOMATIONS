@@ -50,7 +50,8 @@ AUTOMATIONS/
     ├── fix_ohmyzsh.sh          # 🔧 Oh-My-Zsh repair utility
     ├── fix_ohmyzsh_reinstall.sh # 🔧 Complete Oh-My-Zsh reinstall
     ├── fix_zsh_diagnosis.sh    # 🔍 ZSH diagnostic tool
-    └── fix_zshrc_robust.sh     # 🔧 Robust .zshrc repair
+    ├── fix_zshrc_robust.sh     # 🔧 Robust .zshrc repair
+    └── fix_lsd_aliases.sh      # 🔧 Fix lsd-dependent aliases
 ```
 
 ## 🚀 Quick Start
@@ -208,6 +209,9 @@ We provide automated fix utilities in the `utils/` directory:
 
 # Fix specific Oh-My-Zsh issues
 ./utils/fix_ohmyzsh.sh
+
+# Fix lsd command not found errors
+./utils/fix_lsd_aliases.sh
 ```
 
 ### Common Issues
@@ -242,6 +246,15 @@ source ~/.zshrc
 grep "plugins=" ~/.zshrc
 # Reload ZSH configuration
 exec zsh
+```
+
+**5. "command not found: lsd" errors**
+```bash
+# Fix lsd-dependent aliases
+./utils/fix_lsd_aliases.sh
+# Or install lsd for better file listing
+sudo apt install lsd  # Ubuntu/Debian
+brew install lsd       # macOS
 ```
 
 ### Debug Mode

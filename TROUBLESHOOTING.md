@@ -101,6 +101,67 @@ This document covers common issues encountered during the setup process and thei
 # macOS aliases are disabled on Linux systems
 ```
 
+### 8. "command not found: lsd" Error
+
+#### **Error**: `zsh: command not found: lsd`
+
+**Symptoms:**
+- `ls` command fails with "command not found: lsd"
+- Cannot list files or directories
+- Aliases that use `lsd` are broken
+
+**Cause:**
+The aliases are configured to use `lsd` (a modern ls replacement) but it's not installed on the system.
+
+**Solution:**
+```bash
+# Quick fix - use the automated repair utility
+./utils/fix_lsd_aliases.sh
+
+# Then reload shell
+exec zsh
+```
+
+**Alternative Solutions:**
+
+1. **Install lsd (recommended)**:
+```bash
+# Ubuntu/Debian
+sudo apt install lsd
+
+# CentOS/RHEL
+sudo yum install lsd
+
+# Fedora
+sudo dnf install lsd
+
+# macOS
+brew install lsd
+
+# Arch Linux
+sudo pacman -S lsd
+```
+
+2. **Manual alias fix**:
+```bash
+# Unset problematic aliases
+unalias ls ll la
+
+# Set standard aliases
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    alias ls='ls --color=auto'
+    alias ll='ls -alh --color=auto'
+    alias la='ls -lah --color=auto'
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    alias ls='ls -G'
+    alias ll='ls -alh -G'
+    alias la='ls -lah -G'
+fi
+```
+
+**Prevention:**
+The aliases are now configured to automatically fall back to standard `ls` if `lsd` is not available.
+
 ## 🔧 Error Types
 
 ### Script Syntax Errors
