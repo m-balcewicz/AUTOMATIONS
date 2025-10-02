@@ -98,24 +98,6 @@ backup_zsh_config() {
     
     mk_log "Backup created successfully!" "false" "green" 2>/dev/null || echo "✓ Backup created!"
 }
-    local backup_dir="$HOME/.zsh_backup_$(date +%Y%m%d_%H%M%S)"
-    
-    mk_log "Creating backup of your ZSH configuration at $backup_dir..." "false" "blue" 2>/dev/null || echo "Creating backup..."
-    mkdir -p "$backup_dir"
-    
-    # Backup main config files
-    [ -f "$HOME/.zshrc" ] && cp "$HOME/.zshrc" "$backup_dir/"
-    [ -f "$HOME/.p10k.zsh" ] && cp "$HOME/.p10k.zsh" "$backup_dir/"
-    
-    # Backup custom ZSH files
-    local custom_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-    if [ -d "$custom_dir" ]; then
-        mkdir -p "$backup_dir/custom"
-        cp -r "$custom_dir"/* "$backup_dir/custom/" 2>/dev/null || true
-    fi
-    
-    mk_log "Backup created successfully!" "false" "green" 2>/dev/null || echo "✓ Backup created!"
-}
 
 # Copy configuration files
 copy_config_files() {
