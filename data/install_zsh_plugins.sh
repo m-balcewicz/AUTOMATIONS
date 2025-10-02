@@ -1,33 +1,27 @@
 #!/bin/bash
 # ---------------------------------------
-# Script: install_zsh_autocompletion.sh
+# Script: install_zsh_plugins.sh
 # Author: Martin Balcewicz
-# Email: martin.balcewicz@rockphysics.org
-# Date: June 2025
-# Description: Installs useful ZSH autocompletion plugins
+# Date: October 2025
+# Description: Installs ZSH plugins for enhanced shell experience
 # ---------------------------------------
 
-# Source the shell utilities
-SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-UTILS_PATH="${SCRIPT_DIR}/../UTILS/shell_utils.sh"
+# Get script directory and source utilities
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+UTILS_PATH="${SCRIPT_DIR}/../utils/shell_utils.sh"
 
-# Source the utilities file or use local fallback implementations
+# Source utilities if available
 if [ -f "$UTILS_PATH" ]; then
     source "$UTILS_PATH"
 else
-    echo "Warning: Could not find shell utilities at $UTILS_PATH"
-    echo "Using local function implementations instead."
-    
-    # Local fallback implementations of utility functions
-    print_style() {
-        local message="$1"
-        local style="${2:-indented_separator}"
-        
-        # Determine the style character
-        local style_chars="-"
-        if [ "$style" == "box" ]; then
-            style_chars="#"
-        elif [ "$style" == "section" ]; then
+    # Simple fallback logging function
+    mk_log() {
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+    }
+fi
+
+# Source OS detection
+source "$SCRIPT_DIR/detect_os.sh" then
             style_chars="="
         elif [ "$style" == "decorative" ]; then
             style_chars="*"

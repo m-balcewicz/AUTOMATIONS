@@ -9,7 +9,7 @@
 
 # Source the shell utilities
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-UTILS_PATH="${SCRIPT_DIR}/../UTILS/shell_utils.sh"
+UTILS_PATH="${SCRIPT_DIR}/../utils/shell_utils.sh"
 
 # Source the utilities file or use local fallback implementations
 if [ -f "$UTILS_PATH" ]; then
@@ -163,7 +163,7 @@ backup_zsh_config() {
 copy_zsh_files() {
     # Define source and destination directories
     local source_dir
-    source_dir="$(dirname "$(realpath "$0")")"
+    source_dir="$(cd "$(dirname "$0")" && pwd)"
     local dest_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     
     # Create destination directory if it doesn't exist
@@ -177,11 +177,11 @@ copy_zsh_files() {
     cp "$source_dir/p10k.zsh" "$HOME/.p10k.zsh"
     echo "✓ Copied p10k.zsh to $HOME/.p10k.zsh"
 
-    # List of modular files to copy
-    local files=("system.zsh" "dev.zsh" "macos.zsh" "navigation.zsh" "remote.zsh" "python.zsh")
+    # List of modular files to copy (common to all systems)
+    local common_files=("system.zsh" "dev.zsh" "navigation.zsh" "remote.zsh" "python.zsh")
     
-    # Copy each modular file
-    for file in "${files[@]}"; do
+    # Copy each common modular file
+    for file in "${common_files[@]}"; do
         if [ -f "$source_dir/$file" ]; then
             cp "$source_dir/$file" "$dest_dir/"
             echo "✓ Copied $file to $dest_dir/"
@@ -190,13 +190,31 @@ copy_zsh_files() {
         fi
     done
     
+    # Copy OS-specific files
+    if [ "$OS_TYPE" = "macos" ]; then
+        if [ -f "$source_dir/macos.zsh" ]; then
+            cp "$source_dir/macos.zsh" "$dest_dir/"
+            echo "✓ Copied macos.zsh to $dest_dir/"
+        fi
+    elif [ "$OS_TYPE" = "linux" ]; then
+        if [ -f "$source_dir/linux.zsh" ]; then
+            cp "$source_dir/linux.zsh" "$dest_dir/"
+            echo "✓ Copied linux.zsh to $dest_dir/"
+        fi
+        # Skip macOS file or create a dummy one to avoid errors
+        if [ ! -f "$dest_dir/macos.zsh" ]; then
+            echo "# macOS aliases skipped on Linux" > "$dest_dir/macos.zsh"
+            echo "✓ Created placeholder macos.zsh"
+        fi
+    fi
+    
     mk_log "All ZSH files have been copied." "false" "green"
     return 0
 }
 
 # Function to securely copy SSH config
 copy_ssh_config() {
-    local source_dir="$(dirname "$(realpath "$0")")/.ssh"
+    local source_dir="$(cd "$(dirname "$0")" && pwd)/.ssh"
     local dest_dir="$HOME/.ssh"
     local config_file="config"
     
@@ -273,6 +291,61 @@ copy_ssh_config() {
     return 0
 }
 
+# Function to install missing dependencies on Linux
+install_linux_dependencies() {
+    mk_log "Installing dependencies for Linux..." "false" "blue"
+    
+    # Check if Oh-My-Zsh is installed
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        mk_log "Installing Oh-My-Zsh..." "false" "yellow"
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    fi
+    
+    # Install required plugins
+    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+        mk_log "Installing zsh-autosuggestions..." "false" "yellow"
+        git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    fi
+    
+    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
+        mk_log "Installing zsh-syntax-highlighting..." "false" "yellow"
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+    fi
+    
+    # Install Powerlevel10k theme
+    if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
+        mk_log "Installing Powerlevel10k theme..." "false" "yellow"
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+    fi
+    
+    # Install JetBrainsMono Nerd Font
+    if [ ! -f "$HOME/.local/share/fonts/JetBrainsMonoNLNerdFont-Regular.ttf" ]; then
+        mk_log "Installing JetBrainsMono Nerd Font..." "false" "yellow"
+        mkdir -p ~/.local/share/fonts
+        wget -q -P ~/.local/share/fonts \
+          https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+        cd ~/.local/share/fonts && unzip -q JetBrainsMono.zip && rm JetBrainsMono.zip
+        fc-cache -fv > /dev/null 2>&1
+        cd - > /dev/null
+    fi
+    
+    mk_log "Linux dependencies installed successfully!" "false" "green"
+    return 0
+}
+
+# Function to detect operating system
+detect_os() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "macos"
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+        echo "windows"
+    else
+        echo "unknown"
+    fi
+}
+
 # Display welcome message
 echo -e "\033[35m----------------------------------\033[0m"
 echo -e "\033[35mWelcome to Personal ZSH Setup\033[0m"
@@ -280,6 +353,15 @@ echo -e "\033[35mDeveloped 06/2025 by Martin Balcewicz\033[0m"
 echo -e "\033[35m(mail: martin.balcewicz@rockphysics.org)\033[0m"
 echo -e "\033[35m----------------------------------\033[0m"
 echo ""
+
+# Detect operating system
+OS_TYPE=$(detect_os)
+mk_log "Detected operating system: $OS_TYPE" "false" "blue"
+
+# Install dependencies based on OS
+if [ "$OS_TYPE" = "linux" ]; then
+    install_linux_dependencies
+fi
 
 # Check prerequisites
 check_zsh
@@ -300,6 +382,14 @@ copy_zsh_files
 
 # Copy SSH config securely
 copy_ssh_config
+
+# Detect the operating system
+os_type=$(detect_os)
+
+# Install Linux dependencies if applicable
+if [ "$os_type" == "linux" ]; then
+    install_linux_dependencies
+fi
 
 mk_log "
 Personal ZSH environment has been set up successfully!

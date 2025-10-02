@@ -9,8 +9,8 @@
 # ---------------------------------------
 
 # Source the shell utilities
-SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-UTILS_PATH="${SCRIPT_DIR}/../UTILS/shell_utils.sh"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+UTILS_PATH="${SCRIPT_DIR}/../utils/shell_utils.sh"
 
 # Source the utilities file or use local fallback implementations
 if [ -f "$UTILS_PATH" ]; then

@@ -9,25 +9,21 @@
 # ---------------------------------------
 
 # Source the shell utilities
-SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-UTILS_PATH="${SCRIPT_DIR}/../UTILS/shell_utils.sh"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+UTILS_PATH="${SCRIPT_DIR}/../utils/shell_utils.sh"
 
 # Source the utilities file or use local fallback implementations
 if [ -f "$UTILS_PATH" ]; then
     source "$UTILS_PATH"
 else
-    echo "Warning: Could not find shell utilities at $UTILS_PATH"
-    echo "Using local function implementations instead."
-    
-    # Local fallback implementations of utility functions
-    print_style() {
-        local message="$1"
-        local style="${2:-indented_separator}"
-        
-        # Determine the style character
-        local style_chars="-"
-        if [ "$style" == "box" ]; then
-            style_chars="#"
+    # Simple fallback logging function
+    mk_log() {
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+    }
+fi
+
+# Source OS detection
+source "$SCRIPT_DIR/detect_os.sh"
         elif [ "$style" == "section" ]; then
             style_chars="="
         elif [ "$style" == "decorative" ]; then
