@@ -10,6 +10,8 @@ A comprehensive, cross-platform automation suite for setting up a modern develop
 - **Automated Dependencies**: Handles font installation, plugins, and themes
 - **Backup System**: Automatically backs up existing configurations
 - **Interactive Setup**: Menu-driven installation process
+- **Comprehensive Troubleshooting**: Detailed guides and automated fix utilities
+- **Professional Documentation**: Complete setup and maintenance procedures
 
 ## 📁 Project Structure
 
@@ -41,12 +43,20 @@ AUTOMATIONS/
 │       └── linux.zsh           # 🐧 Linux specific
 ├── TOOLS/                      # 📚 Documentation & guides
 │   └── How_tmux.md             # 📖 tmux usage guide
-└── utils/                      # 🛠️  Utility functions
+└── utils/                      # 🛠️  Utility functions & fixes
     ├── shell_utils.sh          # 🔧 Common shell utilities
-    └── demo_utils.sh           # 🎬 Demo and testing tools
+    ├── demo_utils.sh           # 🎬 Demo and testing tools
+    ├── test_personal_setup.sh  # 🧪 Personal setup validation
+    ├── fix_ohmyzsh.sh          # 🔧 Oh-My-Zsh repair utility
+    ├── fix_ohmyzsh_complete.sh # 🔧 Complete Oh-My-Zsh reinstall
+    ├── fix_zsh_diagnosis.sh    # 🔍 ZSH diagnostic tool
+    └── fix_zshrc_robust.sh     # 🔧 Robust .zshrc repair
 ```
 
 ## 🚀 Quick Start
+
+> **📖 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**  
+> **🛠️ For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)**
 
 ### Option 1: Complete Setup (Recommended)
 ```bash
@@ -70,6 +80,15 @@ cd personal
 ./data/install_fonts.sh
 ./data/install_powerlevel10k.sh
 ./data/install_zsh_plugins.sh
+```
+
+### Option 4: Fix Existing Installation
+```bash
+# If you're experiencing issues, see TROUBLESHOOTING.md
+# or use the automated fix utilities:
+./utils/fix_ohmyzsh_complete.sh      # Complete Oh-My-Zsh reinstall
+./utils/fix_zsh_diagnosis.sh         # Diagnose ZSH issues
+./utils/fix_zshrc_robust.sh          # Repair .zshrc configuration
 ```
 
 ## 🎨 Theme & Customization
@@ -166,12 +185,37 @@ The setup includes SSH configuration management:
 
 ## 🛠️ Troubleshooting
 
+For comprehensive troubleshooting information, see **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** which covers:
+- Oh-My-Zsh installation failures
+- Syntax errors in scripts  
+- Cross-platform compatibility issues
+- Plugin loading problems
+- SSH configuration issues
+
+### Quick Fix Utilities
+
+We provide automated fix utilities in the `utils/` directory:
+
+```bash
+# Complete Oh-My-Zsh reinstallation (fixes most issues)
+./utils/fix_ohmyzsh_complete.sh
+
+# Diagnose ZSH configuration issues
+./utils/fix_zsh_diagnosis.sh
+
+# Repair corrupted .zshrc files
+./utils/fix_zshrc_robust.sh
+
+# Fix specific Oh-My-Zsh issues
+./utils/fix_ohmyzsh.sh
+```
+
 ### Common Issues
 
 **1. Oh-My-Zsh installation fails**
 ```bash
-# Check internet connection and try manual installation
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Use the complete reinstall utility
+./utils/fix_ohmyzsh_complete.sh
 ```
 
 **2. Fonts not displaying correctly**
@@ -192,7 +236,9 @@ source ~/.zshrc
 
 **4. Plugins not loading**
 ```bash
-# Check plugins array in .zshrc
+# Use the diagnostic tool
+./utils/fix_zsh_diagnosis.sh
+# Or check plugins array in .zshrc
 grep "plugins=" ~/.zshrc
 # Reload ZSH configuration
 exec zsh
