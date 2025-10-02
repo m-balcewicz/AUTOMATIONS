@@ -19,6 +19,11 @@ detect_os() {
     fi
 }
 
+# Alias for consistency with setup.sh
+get_os_type() {
+    detect_os
+}
+
 # If script is executed directly, output the OS
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     detect_os

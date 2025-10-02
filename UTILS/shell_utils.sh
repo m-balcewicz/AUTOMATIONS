@@ -129,11 +129,34 @@ get_linux_distro() {
     fi
 }
 
+# Standalone color functions for direct use
+red() {
+    echo -e "\033[31m$1\033[0m"
+}
+
+green() {
+    echo -e "\033[32m$1\033[0m"
+}
+
+yellow() {
+    echo -e "\033[33m$1\033[0m"
+}
+
+blue() {
+    echo -e "\033[34m$1\033[0m"
+}
+
+purple() {
+    echo -e "\033[35m$1\033[0m"
+}
+
 # Example of how to use these functions:
 # source /path/to/shell_utils.sh
 # mk_log "This is a success message" "true" "green"
 # mk_log "This is an error message" "true" "red"
 # mk_log "This is a plain message" "true"
+# red "This is red text"
+# blue "This is blue text"
 # os=$(detect_os)
 # if [ "$os" == "linux" ]; then
 #   distro=$(get_linux_distro)
