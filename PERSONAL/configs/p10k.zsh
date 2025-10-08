@@ -58,7 +58,7 @@
   # Left prompt segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     context                   # user@host
-    dir                       # current directory
+    # dir                     # current directory (disabled)
     vcs                       # git status
     prompt_char               # prompt symbol
   )
@@ -111,6 +111,11 @@
 
   # Custom dark blue for current directory.
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=$custom_dark_blue
+  
+  # Directory truncation settings
+  # Show only current directory name, not full path
+  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_last
+  typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
 
   # Context format when root: user@host. Change username color to purple for better contrast
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$custom_purple}%n%f%F{$custom_dark_blue}@%m%f"
