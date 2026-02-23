@@ -5,6 +5,12 @@
 # Description: System-related aliases and functions.
 # ---------------------------------------
 
+# Directory colors - set to orange (~#EE8133)
+# LSCOLORS: used by macOS native ls (first pair = directory)
+export LSCOLORS="Dxfxcxdxbxegedabagacad"
+# LS_COLORS: used by GNU ls (Linux) - replace any existing di= value
+export LS_COLORS="${LS_COLORS//di=*([^:]):/}di=38;5;214:"
+
 # Shell editing/reloading
 alias zshconfig="$EDITOR ~/.zshrc"
 alias ohmyzsh="$EDITOR ~/.oh-my-zsh"
