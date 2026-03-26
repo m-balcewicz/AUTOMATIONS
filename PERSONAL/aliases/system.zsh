@@ -57,6 +57,15 @@ update_office() {
     sudo /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/MacOS/msupdate --install
 }
 
+# Application launchers
+acrobat() {
+  if [ $# -eq 0 ]; then
+    printf 'Usage: acrobat <file>\n' >&2
+    return 1
+  fi
+  open -a 'Adobe Acrobat' -- "$@"
+}
+
 # System information display
 alias sysinfo="system_profiler SPHardwareDataType SPSoftwareDataType"
 alias diskspace="df -h | grep -v tmpfs"

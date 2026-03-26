@@ -1,6 +1,9 @@
 # Directories and files to ignore in the repository
 .vscode/
 
+# Temporary files for macOS, Windows, and Linux
+.DS_Store
+
 # SSH Configuration - never commit sensitive connection information
 PERSONAL/.ssh/
 **/PERSONAL/.ssh/
