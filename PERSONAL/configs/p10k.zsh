@@ -30,6 +30,7 @@
   # Custom color palette based on colorcode.md
   # Using 256-color codes for better terminal compatibility.
   local custom_green='107'       # green:      ~#74975A
+  local custom_orange='215'      # orange:     ~#F4A261
   local custom_purple='140'      # purple:     ~#BD8BBE
   local custom_dark_blue='75'    # dark_blue:  ~#649CD3
   local custom_light_blue='153'  # light_blue: ~#A7DBFC
@@ -58,7 +59,7 @@
   # Left prompt segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     context                   # user@host
-    # dir                     # current directory (disabled)
+    dir                       # current directory
     vcs                       # git status
     prompt_char               # prompt symbol
   )
@@ -66,7 +67,6 @@
   # Right prompt segments.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     my_conda                  # OUR CUSTOM conda environment segment
-    virtualenv                # python virtual environment
     time                      # current time
   )
 
@@ -109,13 +109,16 @@
   # We no longer need the built-in conda configuration
   # as our custom function 'prompt_my_conda' handles it.
 
-  # Custom dark blue for current directory.
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=$custom_dark_blue
+  # Custom orange for current directory.
+  typeset -g POWERLEVEL9K_DIR_FOREGROUND=$custom_orange
   
   # Directory truncation settings
   # Show only current directory name, not full path
   typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_last
   typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+  # Force dir segment to render only the closest directory (basename).
+  # Example: /a/b/c -> c, ~/projects/demo -> demo, ~ -> ~
+  typeset -g POWERLEVEL9K_DIR_CONTENT_EXPANSION='${${(%):-%~}:t}'
 
   # Context format when root: user@host. Change username color to purple for better contrast
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$custom_purple}%n%f%F{$custom_dark_blue}@%m%f"
