@@ -57,6 +57,12 @@ update_office() {
     sudo /Library/Application\ Support/Microsoft/MAU2.0/Microsoft\ AutoUpdate.app/Contents/MacOS/msupdate --install
 }
 
+update_tex() {
+    echo "#---------- Update TeX Live ----------#"
+    echo "#######################################"
+    sudo tlmgr update --self --all
+}
+
 # Application launchers
 acrobat() {
   if [ $# -eq 0 ]; then
